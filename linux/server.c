@@ -9,7 +9,26 @@
 #define MAX_COMMAND_LINE_LENGTH 512
 
 void download(char *cl){
-	printf("%s\n", cl);
+	int argc;
+	char *arg, *substring;
+
+	argc = 0;
+	strtok(cl, " ");
+	
+	while ((substring = strtok(NULL, " ")) != NULL){
+		//Will eventually implement flags (e.x. for file compression).
+		//Right now though, only command lines with one argument are valid (syntax: download [file])
+		arg = substring;
+		++argc;
+	}
+
+	if (argc == 1){
+		//Attempt to open file in repo, and then send its contents back to client.
+	}
+	else{
+		printf("Error : Too many argumenets to command \"download\"\n{syntax - download [file]}\n");
+	}
+
 }
 
 int main(){
