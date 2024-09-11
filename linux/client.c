@@ -31,7 +31,7 @@ int main(int argc, char **argv){
 		send(sockfd, command_line, MAX_COMMAND_LINE_LENGTH, 0);
 
 		//TODO: Have client loop, making calls to server until all bytes have been read.
-		while(0/*There is still file contents*/){
+		while(0/*There is still file content*/){
 			//printf("%s\n", bytes);
 		}
 		
