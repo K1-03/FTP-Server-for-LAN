@@ -29,6 +29,11 @@ int main(int argc, char **argv){
 		
 		command_line[strlen(command_line) - 1] = '\0';  //Removing newline from buffer.
 
+		if (strlen(command_line) == 0){
+			close(sockfd);
+			continue;
+		}
+
 		strcpy(cl_copy, command_line);
 
 		command = strtok(cl_copy, " ");

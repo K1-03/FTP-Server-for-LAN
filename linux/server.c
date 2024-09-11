@@ -69,6 +69,7 @@ int main(){
 	char *client_command_line;
 	char *ccl_copy;
 	char *client_command;
+	int bytes_read;
 
 	addrlen = sizeof(struct sockaddr_in);
 
@@ -88,6 +89,7 @@ int main(){
 		err = malloc(512);
 		client_command_line = malloc(MAX_COMMAND_LINE_LENGTH);
 		ccl_copy = malloc(MAX_COMMAND_LINE_LENGTH);
+		bytes_read = 0;
 
 		if (listen(sockfd, 100)){
 			perror("listen");
@@ -100,10 +102,14 @@ int main(){
 			exit(3);
 		}
 		
-		if (recv(client_sock_fd, client_command_line, MAX_COMMAND_LINE_LENGTH, 0) < 0){
+		if ((bytes_read = recv(client_sock_fd, client_command_line, MAX_COMMAND_LINE_LENGTH, 0)) < 0){
 			perror("recv");
 			exit(4);
 		}
+		else if (bytes_read == 0){
+			continue;
+		}
+
 
 		strcpy(ccl_copy, client_command_line);
 
@@ -112,7 +118,7 @@ int main(){
 		if (strcmp(client_command, "download") == 0){
 			printf("DOWNLOAD COMMAND\n");
 			download(client_command_line);
-		}
+		}	
 		else{
 			err = "Unrecognized Command\n";
 			send(client_sock_fd, err, strlen(err), 0);
