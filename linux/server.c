@@ -116,7 +116,6 @@ int main(){
 		client_command = strtok(ccl_copy, " ");
 
 		if (strcmp(client_command, "download") == 0){
-			printf("DOWNLOAD COMMAND\n");
 			download(client_command_line);
 		}	
 		else{
