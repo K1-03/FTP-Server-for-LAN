@@ -38,14 +38,14 @@ void download(char *cl){
 		strcat(filename, arg);
 		
 	    if ((file = fopen(filename, "r")) != NULL){
-			while((bytes_read = fread(file_bytes, 1, 1024, file)) == 1024){
+			while((bytes_read = fread(file_bytes, 1, 1024, file)) > 0){
 				printf("\n%d\n", bytes_read);
-				send(client_sock_fd, &file_bytes, 1024, 0);
+				send(client_sock_fd, &file_bytes, bytes_read, 0);
 				memset(file_bytes, '\0', 1024);
 			}
 
-			printf("\n%d\n", bytes_read);
-			send(client_sock_fd, &file_bytes, bytes_read, 0);
+			close(client_sock_fd);
+
 		}
 		else{
 			err = "File does not exist.\0";
