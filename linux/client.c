@@ -9,12 +9,13 @@
 int main(int argc, char **argv){
 	int sockfd;
 	struct sockaddr_in addr;
-	char *command_line;
+	char *command_line, *cl_copy, *command;
 	char *bytes;
 	int bytes_read;
 
 	while(1){
 		command_line = malloc(MAX_COMMAND_LINE_LENGTH);
+		cl_copy = malloc(MAX_COMMAND_LINE_LENGTH);
 		bytes = malloc(1024);
 
 		sockfd = socket(AF_INET, SOCK_STREAM, 0);
@@ -28,16 +29,25 @@ int main(int argc, char **argv){
 		
 		command_line[strlen(command_line) - 1] = '\0';  //Removing newline from buffer.
 
-		send(sockfd, command_line, MAX_COMMAND_LINE_LENGTH, 0);
+		strcpy(cl_copy, command_line);
 
-		//TODO: Have client loop, making calls to server until all bytes have been read.
-		while((bytes_read = recv(sockfd, bytes, 1024, 0)) > 0){
-			printf("%s", bytes);
-			memset(bytes, '\0', 1024);
+		command = strtok(cl_copy, " ");
+
+		if (strcmp(command, "download") == 0){
+			printf("%s\n", command_line);
+			send(sockfd, command_line, MAX_COMMAND_LINE_LENGTH, 0);
+			while((bytes_read = recv(sockfd, bytes, 1024, 0)) > 0){
+				printf("%s", bytes);
+				memset(bytes, '\0', 1024);
+			}
+		}
+		else{
+			printf("Unrecognized command \"%s\"\n", command);
+			close(sockfd);
 		}
 		
-		//recv(sockfd, bytes, 1024, 0);
-		//printf("%s\n", bytes);
+		
 		free(command_line);
+		free(cl_copy);
 	}
 }

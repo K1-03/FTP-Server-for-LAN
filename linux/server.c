@@ -39,22 +39,26 @@ void download(char *cl){
 		
 	    if ((file = fopen(filename, "r")) != NULL){
 			while((bytes_read = fread(file_bytes, 1, 1024, file)) > 0){
-				printf("\n%d\n", bytes_read);
 				send(client_sock_fd, &file_bytes, bytes_read, 0);
 				memset(file_bytes, '\0', 1024);
 			}
-
-			close(client_sock_fd);
-
 		}
 		else{
-			err = "File does not exist.\0";
+			err = "File does not exist.\n\0";
 			send(client_sock_fd, err, strlen(err), 0);
 		}
 	}
-	else{
-		printf("Error : Too many argumenets to command \"download\"\n{syntax - download [file]}\n");
+	else if (argc == 0){   //These error cases should probably be handled by the client. The client can't check if a file exists on the server-side
+							//, but it can check if a download command has incorrect syntax before its passed.
+		err = "Error : No argumenets to command \"download\"\n{syntax - download [file]}\n";
+		send(client_sock_fd, err, strlen(err), 0);
 	}
+	else{
+		err = "Error : Too many argumenets to command \"download\"\n{syntax - download [file]}\n";
+		send(client_sock_fd, err, strlen(err), 0);
+	}
+
+	close(client_sock_fd);
 	free(filename);
 }
 
@@ -106,12 +110,12 @@ int main(){
 		client_command = strtok(ccl_copy, " ");
 
 		if (strcmp(client_command, "download") == 0){
+			printf("DOWNLOAD COMMAND\n");
 			download(client_command_line);
 		}
 		else{
 			err = "Unrecognized Command\n";
 			send(client_sock_fd, err, strlen(err), 0);
-			//printf("Unrecognized Command \"%s\"\n", client_command);
 		}
 
 
