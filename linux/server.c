@@ -48,14 +48,13 @@ void download(char *cl){
 			send(client_sock_fd, err, strlen(err), 0);
 		}
 	}
-	else if (argc == 0){   //These error cases should probably be handled by the client. The client can't check if a file exists on the server-side
-							//, but it can check if a download command has incorrect syntax before its passed.
-		err = "Error : No argumenets to command \"download\"\n{syntax - download [file]}\n";
-		send(client_sock_fd, err, strlen(err), 0);
+	else if (argc == 0){   //I believe this is unreachable now, since the client checks if there are 0 args before sending the command
+		/*err = "Error : No argumenets to command \"download\"\n{syntax - download [file]}\n";
+		send(client_sock_fd, err, strlen(err), 0);*/
 	}
-	else{
-		err = "Error : Too many argumenets to command \"download\"\n{syntax - download [file]}\n";
-		send(client_sock_fd, err, strlen(err), 0);
+	else{   //This will not be an error in the near future (currently unreachable.)
+		/*err = "Error : Too many argumenets to command \"download\"\n{syntax - download [file]}\n";
+		send(client_sock_fd, err, strlen(err), 0);*/
 	}
 
 	close(client_sock_fd);
