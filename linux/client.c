@@ -5,8 +5,15 @@
 #include <netinet/ip.h>
 
 #define MAX_COMMAND_LINE_LENGTH 512
+#define GOOD 0
+#define FILE_DOES_NOT_EXIST 1
+#define UNRECOGNIZED_COMMAND 2
+
+int status;
 
 int main(){
+	FILE *downloaded_file;
+	char *filename;
 	int sockfd;
 	struct sockaddr_in addr;
 	char *command_line, *cl_copy, *command, *args, *arg;
@@ -54,9 +61,28 @@ int main(){
 																			//a command currently.
 
 					send(sockfd, command_line, MAX_COMMAND_LINE_LENGTH, 0);
-					while((bytes_read = recv(sockfd, bytes, 1024, 0)) > 0){
-						printf("%s", bytes); //TODO: Replace this print with code that writes file to a temporary client directory
-						memset(bytes, '\0', 1024);
+					recv(sockfd, &status, 1, 0);
+					
+					switch(status){
+						case GOOD:
+							filename = malloc(256);
+							memset(filename, '\0', 256);
+
+							strcat(filename, "test/");
+							strcat(filename, arg);
+
+							downloaded_file = fopen(filename, "w");
+
+							while((bytes_read = recv(sockfd, bytes, 1024, 0)) > 0){
+								fwrite(bytes, 1, bytes_read, downloaded_file);
+								memset(bytes, '\0', 1024);
+							}
+
+							fclose(downloaded_file);
+							break;
+						case FILE_DOES_NOT_EXIST:
+							printf("File does (with STATUS) not exist\n");
+							break;
 					}
 				}
 				else if (argc == 0){ 

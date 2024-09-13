@@ -7,9 +7,13 @@
 #include <pthread.h>
 
 #define MAX_COMMAND_LINE_LENGTH 512
+#define GOOD 0
+#define FILE_DOES_NOT_EXIST 1
+#define UNRECOGNIZED_COMMAND 2
 
 int client_sock_fd;
 char *err;
+int status;
 
 void download(char *cl){
 	int argc;
@@ -38,14 +42,16 @@ void download(char *cl){
 		strcat(filename, arg);
 		
 	    if ((file = fopen(filename, "r")) != NULL){
+			status = GOOD;
+			send(client_sock_fd, &status, 1, 0);
 			while((bytes_read = fread(file_bytes, 1, 1024, file)) > 0){
 				send(client_sock_fd, &file_bytes, bytes_read, 0);
 				memset(file_bytes, '\0', 1024);
 			}
 		}
 		else{
-			err = "File does not exist.\n\0";
-			send(client_sock_fd, err, strlen(err), 0);
+			status = FILE_DOES_NOT_EXIST;
+			send(client_sock_fd, &status, 1, 0);
 		}
 	}
 	else if (argc == 0){   //I believe this is unreachable now, since the client checks if there are 0 args before sending the command
@@ -118,8 +124,8 @@ int main(){
 			download(client_command_line);
 		}	
 		else{
-			err = "Unrecognized Command\n";
-			send(client_sock_fd, err, strlen(err), 0);
+			status = UNRECOGNIZED_COMMAND;
+			send(client_sock_fd, &status, 1, 0);
 		}
 
 
