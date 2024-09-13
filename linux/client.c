@@ -55,7 +55,7 @@ int main(){
 
 					send(sockfd, command_line, MAX_COMMAND_LINE_LENGTH, 0);
 					while((bytes_read = recv(sockfd, bytes, 1024, 0)) > 0){
-						printf("%s", bytes);
+						printf("%s", bytes); //TODO: Replace this print with code that writes file to a temporary client directory
 						memset(bytes, '\0', 1024);
 					}
 				}
